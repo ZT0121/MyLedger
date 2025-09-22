@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>簡易記帳</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 400px; margin: 40px auto; padding: 20px; background: #fdfaf6; }
+    h2 { text-align: center; }
+    label { display: block; margin-top: 12px; }
+    input, select, button { width: 100%; padding: 8px; margin-top: 4px; font-size: 16px; }
+    button { background: #8b6f47; color: white; border: none; cursor: pointer; }
+    button:hover { background: #6d5334; }
+  </style>
+</head>
+<body>
+  <h2>簡易記帳</h2>
+  <form id="expenseForm">
+    <label>品項：<input type="text" id="item" required></label>
+    <label>金額：<input type="number" id="amount" required></label>
+    <label>付款方式：
+      <select id="payment">
+        <option value="現金">現金</option>
+        <option value="刷卡">刷卡</option>
+        <option value="轉帳">轉帳</option>
+      </select>
+    </label>
+    <button type="submit">送出</button>
+  </form>
+  <p id="result"></p>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbz6A_SnFG2OKDPfP0LFWXxc0sukuqVlQR3Is-7TM35aR-Flv_-UiDBzEC4m0SC1Mi2n/exec"; // 換成你的 Apps Script URL
+
+    document.getElementById("expenseForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        item: document.getElementById("item").value,
+        amount: document.getElementById("amount").value,
+        payment: document.getElementById("payment").value
+      };
+
+      try {
+        let res = await fetch(scriptURL, {
+          method: "POST",
+          body: JSON.stringify(data)
+        });
+        document.getElementById("result").innerText = "✅ 已記錄";
+        document.getElementById("expenseForm").reset();
+      } catch (err) {
+        document.getElementById("result").innerText = "❌ 傳送失敗";
+      }
+    });
+  </script>
+</body>
+</html>
 
