@@ -92,10 +92,17 @@
 </head>
 <body>
   <div class="container">
-    <h2>💰 簡易記帳</h2>
+    <h2>💰記帳</h2>
     <form id="expenseForm">
-      <label>品項：<input type="text" id="item" required></label>
-      <label>金額：<input type="number" id="amount" required></label>
+      <label>日期：
+        <input type="date" id="date">
+      </label>
+      <label>品項：
+        <input type="text" id="item">
+      </label>
+      <label>金額：
+        <input type="number" id="amount" required>
+      </label>
       <label>付款方式：</label>
       <div class="payment-options">
         <div class="payment-btn" data-value="💵現金">💵現金</div>
@@ -110,10 +117,9 @@
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbz6A_SnFG2OKDPfP0LFWXxc0sukuqVlQR3Is-7TM35aR-Flv_-UiDBzEC4m0SC1Mi2n/exec";
 
-    // 切換付款方式按鈕
+    // 付款方式按鈕切換
     const paymentBtns = document.querySelectorAll(".payment-btn");
     const paymentInput = document.getElementById("payment");
-
     paymentBtns.forEach(btn => {
       btn.addEventListener("click", () => {
         paymentBtns.forEach(b => b.classList.remove("active"));
@@ -122,14 +128,21 @@
       });
     });
 
+    // 表單送出
     document.getElementById("expenseForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const data = {
+        date: document.getElementById("date").value,
         item: document.getElementById("item").value,
         amount: document.getElementById("amount").value,
         payment: document.getElementById("payment").value
       };
 
+      if (!data.amount) {
+        document.getElementById("result").innerText = "⚠️ 請輸入金額";
+        document.getElementById("result").className = "error";
+        return;
+      }
       if (!data.payment) {
         document.getElementById("result").innerText = "⚠️ 請選擇付款方式";
         document.getElementById("result").className = "error";
@@ -141,7 +154,8 @@
           method: "POST",
           body: JSON.stringify(data)
         });
-        document.getElementById("result").innerText = "✅ 已記錄";
+        document.getElementById("result").innerText =
+          `✅ 已記錄：${data.item || "-"} $${data.amount} ${data.payment || ""}`;
         document.getElementById("result").className = "success";
         document.getElementById("expenseForm").reset();
         paymentBtns.forEach(b => b.classList.remove("active"));
