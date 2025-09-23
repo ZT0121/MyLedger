@@ -154,9 +154,10 @@
           method: "POST",
           body: JSON.stringify(data)
         });
-        document.getElementById("result").innerText =
-          `✅ 已記錄：${data.item || "-"} $${data.amount} ${data.payment || ""}`;
-        document.getElementById("result").className = "success";
+document.getElementById("result").innerText =
+  `✅ 已記錄：${data.item || "-"} $${data.amount} ${data.payment || ""}`;
+document.getElementById("result").className = "success";
+
         document.getElementById("expenseForm").reset();
         paymentBtns.forEach(b => b.classList.remove("active"));
         paymentInput.value = "";
