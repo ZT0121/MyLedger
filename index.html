@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📒小帳本</title>
   
-  <!-- PWA 設定 -->
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#fdfaf6">
   <meta name="mobile-web-app-capable" content="yes">
@@ -19,20 +18,28 @@
       min-height: 100vh;
     }
 
-    /* 頂部 Dashboard */
+    /* ★★★ 修改這裡：變成 2x2 的網格 ★★★ */
     .dashboard {
-      display: flex; gap: 10px; width: 90%; max-width: 400px; margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* 兩欄 */
+      gap: 12px;
+      width: 90%; max-width: 400px;
+      margin-bottom: 20px;
     }
     .card {
-      flex: 1; background: #fff; padding: 15px 5px; border-radius: 12px;
+      background: #fff; padding: 15px 10px; border-radius: 12px;
       text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      display: flex; flex-direction: column; justify-content: center;
     }
-    .card h3 { margin: 0; font-size: 12px; color: #888; font-weight: normal; }
-    .card p { margin: 5px 0 0 0; font-size: 16px; font-weight: bold; color: #555; }
-    .income p { color: #2e7d32; }
-    .expense p { color: #c62828; }
+    .card h3 { margin: 0; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px;}
+    .card p { margin: 0; font-size: 18px; font-weight: bold; color: #555; }
+    
+    /* 顏色設定 */
+    .income p { color: #2e7d32; }   /* 收入綠 */
+    .expense p { color: #c62828; }  /* 支出紅 */
+    .net p { color: #424242; }      /* 結餘深灰 */
+    .asset p { color: #0288d1; }    /* 資產藍 */
 
-    /* 表單容器 */
     .container {
       background: #fff; padding: 24px; border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 90%; max-width: 400px;
@@ -45,7 +52,6 @@
       border-radius: 8px; font-size: 16px; box-sizing: border-box;
     }
 
-    /* 切換按鈕 (收入/支出) */
     .type-switch { display: flex; gap: 10px; margin-bottom: 10px; }
     .type-btn {
       flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 8px;
@@ -53,7 +59,6 @@
     }
     .type-btn.active { background: #6d5334; color: white; border-color: #6d5334; }
 
-    /* 付款方式 */
     .payment-options { display: flex; gap: 10px; margin-top: 8px; }
     .payment-btn {
       flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px;
@@ -63,7 +68,6 @@
       background: linear-gradient(135deg, #c9a77c, #a98663); color: white; border: none;
     }
 
-    /* 送出按鈕 */
     button[type="submit"] {
       width: 100%; padding: 12px; margin-top: 16px;
       background: linear-gradient(135deg, #c9a77c, #a98663);
@@ -75,19 +79,24 @@
 </head>
 <body>
 
-  <!-- 統計看板 -->
+  <!-- ★★★ 2x2 儀表板 ★★★ -->
   <div class="dashboard">
     <div class="card income">
       <h3>本月收入</h3>
       <p id="inc">$0</p>
     </div>
     <div class="card expense">
-      <h3>本月花費</h3>
+      <h3>本月支出</h3>
       <p id="exp">$0</p>
     </div>
-    <div class="card">
-      <h3>目前資產</h3> <!-- 標題改成這個比較合理 -->
-      <p id="tot" style="color:#0288d1;">$0</p> <!-- 我把資產改成藍色，比較中性 -->
+    <!-- 新增這兩格 -->
+    <div class="card net">
+      <h3>本月結餘</h3>
+      <p id="net">$0</p>
+    </div>
+    <div class="card asset">
+      <h3>目前總資產</h3>
+      <p id="asset">$0</p>
     </div>
   </div>
 
@@ -95,7 +104,6 @@
     <h2>💰記帳</h2>
     <form id="expenseForm">
       
-      <!-- 收入/支出 切換 -->
       <div class="type-switch">
         <div class="type-btn" onclick="setType('收入')">收入</div>
         <div class="type-btn active" onclick="setType('支出')">支出</div>
@@ -119,12 +127,11 @@
   </div>
 
   <script>
-    // ★★★ 請換成你新的部署網址 ★★★
-    const scriptURL = "https://script.google.com/macros/s/你的ID/exec";
+    // ★★★ 換成你的 Google Script URL ★★★
+    const scriptURL = "https://script.google.com/macros/s/你的網址/exec";
 
-    // 初始化
     document.getElementById('date').valueAsDate = new Date();
-    fetchStats(); // 一打開就抓取統計
+    fetchStats(); 
 
     function setType(val) {
       document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
@@ -138,7 +145,6 @@
       document.getElementById('payment').value = val;
     }
 
-    // 記帳
     document.getElementById("expenseForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = document.getElementById("submitBtn");
@@ -154,20 +160,12 @@
       };
 
       try {
-        // 使用 no-cors 是因為只需要送出，不需要讀取回傳結果來加速，但為了安全起見還是用標準 fetch
-        await fetch(scriptURL, {
-          method: "POST",
-          body: JSON.stringify(data)
-        });
-        
+        await fetch(scriptURL, { method: "POST", body: JSON.stringify(data) });
         document.getElementById("result").innerText = "✅ 記好了！";
         setTimeout(() => document.getElementById("result").innerText = "", 2000);
         
-        // 清空表單
         document.getElementById("item").value = "";
         document.getElementById("amount").value = "";
-        
-        // 重新抓取上面的統計數字
         fetchStats();
 
       } catch (err) {
@@ -178,15 +176,16 @@
       }
     });
 
-// 讀取統計
     async function fetchStats() {
       try {
         let res = await fetch(scriptURL);
         let data = await res.json();
         
-        document.getElementById('inc').innerText = "$" + data.monthIncome;  // 改成 monthIncome
-        document.getElementById('exp').innerText = "$" + data.monthExpense; // 改成 monthExpense
-        document.getElementById('tot').innerText = "$" + data.totalAssets;  // 改成 totalAssets
+        // 更新四個格子的數據
+        document.getElementById('inc').innerText = "$" + data.monthIncome;
+        document.getElementById('exp').innerText = "$" + data.monthExpense;
+        document.getElementById('net').innerText = "$" + data.monthNet;     // 本月結餘
+        document.getElementById('asset').innerText = "$" + data.totalAssets; // 總資產
       } catch (e) {
         console.error(e);
       }
