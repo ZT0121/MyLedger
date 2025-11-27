@@ -30,6 +30,7 @@
       background: #fff; padding: 15px 10px; border-radius: 12px;
       text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       display: flex; flex-direction: column; justify-content: center;
+      cursor: pointer; /* ★★★ 加入這一行，讓它看起來可以按 ★★★ */
     }
     .card h3 { margin: 0; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px;}
     .card p { margin: 0; font-size: 18px; font-weight: bold; color: #555; }
@@ -94,9 +95,9 @@
       <h3>本月結餘</h3>
       <p id="net">$0</p>
     </div>
-    <div class="card asset">
-      <h3>目前總資產</h3>
-      <p id="asset">$0</p>
+    <div class="card asset" onclick="toggleAsset()">
+      <h3>目前總資產 👁️</h3>
+      <p id="asset">*****</p>
     </div>
   </div>
 
@@ -175,19 +176,43 @@
         btn.disabled = false;
       }
     });
+    
+// 定義一個全域變數，用來偷存真正的金額
+    let realAssetValue = "$0"; 
 
+    // 讀取統計 (修改版)
     async function fetchStats() {
       try {
         let res = await fetch(scriptURL);
         let data = await res.json();
         
-        // 更新四個格子的數據
+        // 更新前三個格子的數據
         document.getElementById('inc').innerText = "$" + data.monthIncome;
         document.getElementById('exp').innerText = "$" + data.monthExpense;
-        document.getElementById('net').innerText = "$" + data.monthNet;     // 本月結餘
-        document.getElementById('asset').innerText = "$" + data.totalAssets; // 總資產
+        document.getElementById('net').innerText = "$" + data.monthNet;
+        
+        // ★★★ 修改這裡：資產的部分 ★★★
+        // 1. 把真正的錢存到變數裡
+        realAssetValue = "$" + data.totalAssets;
+        
+        // 2. 畫面預設顯示星號 (保護隱私)
+        document.getElementById('asset').innerText = "*****";
+        
       } catch (e) {
         console.error(e);
+      }
+    }
+
+    // ★★★ 新增這個函式：切換顯示/隱藏 ★★★
+    function toggleAsset() {
+      const assetEl = document.getElementById('asset');
+      
+      if (assetEl.innerText === "*****") {
+        // 如果現在是星號，就顯示真正的錢
+        assetEl.innerText = realAssetValue;
+      } else {
+        // 如果現在是錢，就變回星號
+        assetEl.innerText = "*****";
       }
     }
   </script>
