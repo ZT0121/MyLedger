@@ -2,85 +2,236 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📒小帳本</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>📒小帳本 Pro</title>
   
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#fdfaf6">
+  <meta name="theme-color" content="#F9F8F6">
   <meta name="mobile-web-app-capable" content="yes">
+  
+  <!-- 引入好看的字體 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --bg-color: #F9F8F6;
+      --card-bg: #FFFFFF;
+      --primary: #C5A073; /* 質感金棕色 */
+      --primary-dark: #A68358;
+      --text-main: #333333;
+      --text-sub: #999999;
+      --income: #34C759;
+      --expense: #FF3B30;
+      --asset: #007AFF;
+      --radius: 20px;
+    }
+
     body {
       font-family: "Noto Sans TC", sans-serif;
-      background: #fdfaf6;
-      margin: 0; padding: 20px 0;
-      display: flex; flex-direction: column; align-items: center;
+      background: var(--bg-color);
+      margin: 0; 
+      padding: 20px;
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
       min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* ★★★ 修改這裡：變成 2x2 的網格 ★★★ */
+    /* === 1. 頂部儀表板 (2x2 Grid) === */
     .dashboard {
       display: grid;
-      grid-template-columns: 1fr 1fr; /* 兩欄 */
-      gap: 12px;
-      width: 90%; max-width: 400px;
-      margin-bottom: 20px;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      width: 100%; 
+      max-width: 420px;
+      margin-bottom: 25px;
     }
+    
     .card {
-      background: #fff; padding: 15px 10px; border-radius: 12px;
-      text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-      display: flex; flex-direction: column; justify-content: center;
-      cursor: pointer; /* ★★★ 加入這一行，讓它看起來可以按 ★★★ */
+      background: var(--card-bg);
+      padding: 20px 15px;
+      border-radius: var(--radius);
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03); /* 柔和陰影 */
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center;
+      transition: transform 0.1s;
+      position: relative;
+      overflow: hidden;
     }
-    .card h3 { margin: 0; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px;}
-    .card p { margin: 0; font-size: 18px; font-weight: bold; color: #555; }
     
-    /* 顏色設定 */
-    .income p { color: #2e7d32; }   /* 收入綠 */
-    .expense p { color: #c62828; }  /* 支出紅 */
-    .net p { color: #424242; }      /* 結餘深灰 */
-    .asset p { color: #0288d1; }    /* 資產藍 */
+    .card:active { transform: scale(0.98); }
 
+    .card h3 { 
+      margin: 0 0 8px 0; 
+      font-size: 13px; 
+      color: var(--text-sub); 
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    
+    .card p { 
+      margin: 0; 
+      font-family: 'Roboto Mono', monospace; /* 數字用等寬字體比較整齊 */
+      font-size: 20px; 
+      font-weight: 600; 
+      color: var(--text-main); 
+    }
+    
+    /* 顏色標示 */
+    .income p { color: var(--income); }
+    .expense p { color: var(--expense); }
+    .asset p { color: var(--asset); }
+    
+    /* 隱私模式的游標 */
+    .card.asset { cursor: pointer; }
+    .card.asset::after {
+      content: "👁️";
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 10px;
+      opacity: 0.3;
+    }
+
+    /* === 2. 記帳表單容器 === */
     .container {
-      background: #fff; padding: 24px; border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 90%; max-width: 400px;
+      background: var(--card-bg);
+      padding: 30px 25px;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+      width: 100%; 
+      max-width: 420px;
+      box-sizing: border-box;
     }
-    h2 { text-align: center; margin-bottom: 1em; color: #6d5334; }
+
+    h2 { 
+      text-align: center; 
+      margin: 0 0 25px 0; 
+      color: var(--primary-dark); 
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
     
-    label { display: block; margin-top: 12px; color: #3c3c3c; font-weight: 500; }
+    /* === 輸入框樣式優化 === */
+    .input-group { margin-bottom: 18px; }
+    
+    label { 
+      display: block; 
+      margin-bottom: 8px; 
+      color: var(--text-sub); 
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
     input {
-      width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ddd;
-      border-radius: 8px; font-size: 16px; box-sizing: border-box;
+      width: 100%;
+      padding: 14px;
+      border: 2px solid transparent;
+      background: #F4F4F4; /* 淺灰背景 */
+      border-radius: 14px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: all 0.2s;
+      color: #333;
+      font-family: "Noto Sans TC";
+    }
+    
+    input:focus {
+      outline: none;
+      background: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(197, 160, 115, 0.15);
     }
 
-    .type-switch { display: flex; gap: 10px; margin-bottom: 10px; }
+    /* === 切換按鈕 (藥丸造型) === */
+    .toggle-container {
+      background: #F0F0F0;
+      border-radius: 14px;
+      padding: 4px;
+      display: flex;
+      margin-bottom: 25px;
+    }
+    
     .type-btn {
-      flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 8px;
-      text-align: center; cursor: pointer; background: #f8f4ef; color: #888;
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #888;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .type-btn.active { background: #6d5334; color: white; border-color: #6d5334; }
+    
+    /* 選中狀態 - 白色浮起 */
+    .type-btn.active {
+      background: #fff;
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-weight: bold;
+    }
+    
+    /* 收入選中時變綠，支出變紅 (選擇性) */
+    .type-btn.active[onclick*="收入"] { color: var(--income); }
+    .type-btn.active[onclick*="支出"] { color: var(--expense); }
 
-    .payment-options { display: flex; gap: 10px; margin-top: 8px; }
+    /* === 付款方式按鈕 === */
+    .payment-options { display: flex; gap: 12px; }
+    
     .payment-btn {
-      flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px;
-      background: #f8f4ef; cursor: pointer; text-align: center;
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #EEE;
+      border-radius: 14px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      font-size: 15px;
+      color: var(--text-main);
+      transition: 0.2s;
     }
+    
     .payment-btn.active {
-      background: linear-gradient(135deg, #c9a77c, #a98663); color: white; border: none;
+      border-color: var(--primary);
+      background: #FFF9F2;
+      color: var(--primary-dark);
+      font-weight: bold;
     }
 
+    /* === 送出按鈕 === */
     button[type="submit"] {
-      width: 100%; padding: 12px; margin-top: 16px;
-      background: linear-gradient(135deg, #c9a77c, #a98663);
-      color: white; border: none; border-radius: 12px;
-      font-size: 16px; font-weight: bold; cursor: pointer;
+      width: 100%;
+      padding: 16px;
+      margin-top: 25px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(197, 160, 115, 0.3);
+      transition: transform 0.1s;
     }
-    #result { text-align: center; margin-top: 12px; font-size: 14px; }
+    
+    button[type="submit"]:active { transform: scale(0.97); }
+    button[type="submit"]:disabled { background: #ccc; box-shadow: none; }
+
+    #result { 
+      text-align: center; 
+      margin-top: 15px; 
+      font-size: 14px; 
+      height: 20px; /* 佔位避免跳動 */
+    }
   </style>
 </head>
 <body>
 
-  <!-- ★★★ 2x2 儀表板 ★★★ -->
+  <!-- 儀表板 -->
   <div class="dashboard">
     <div class="card income">
       <h3>本月收入</h3>
@@ -90,66 +241,87 @@
       <h3>本月支出</h3>
       <p id="exp">$0</p>
     </div>
-    <!-- 新增這兩格 -->
-    <div class="card net">
+    <div class="card">
       <h3>本月結餘</h3>
       <p id="net">$0</p>
     </div>
     <div class="card asset" onclick="toggleAsset()">
-      <h3>目前總資產 👁️</h3>
+      <h3>目前總資產</h3>
       <p id="asset">*****</p>
     </div>
   </div>
 
+  <!-- 記帳表單 -->
   <div class="container">
-    <h2>💰記帳</h2>
+    <h2>💸 快速記帳</h2>
     <form id="expenseForm">
       
-      <div class="type-switch">
-        <div class="type-btn" onclick="setType('收入')">收入</div>
-        <div class="type-btn active" onclick="setType('支出')">支出</div>
+      <!-- 收入/支出 切換 (藥丸樣式) -->
+      <div class="toggle-container">
+        <div class="type-btn active" onclick="setType(this, '支出')">支出</div>
+        <div class="type-btn" onclick="setType(this, '收入')">收入</div>
       </div>
       <input type="hidden" id="type" value="支出">
 
-      <label>日期：<input type="date" id="date"></label>
-      <label>品項：<input type="text" id="item"></label>
-      <label>金額：<input type="number" id="amount" required></label>
-      
-      <label>付款方式：</label>
-      <div class="payment-options">
-        <div class="payment-btn" onclick="setPay(this, '💵現金')">💵現金</div>
-        <div class="payment-btn" onclick="setPay(this, '💳刷卡')">💳刷卡</div>
+      <div class="input-group">
+        <label>日期</label>
+        <input type="date" id="date">
       </div>
-      <input type="hidden" id="payment" required>
       
-      <button type="submit" id="submitBtn">記錄</button>
+      <div class="input-group">
+        <label>品項</label>
+        <input type="text" id="item" placeholder="早餐、薪水...">
+      </div>
+
+      <div class="input-group">
+        <label>金額</label>
+        <input type="number" id="amount" placeholder="$$$" required inputmode="decimal">
+      </div>
+      
+      <div class="input-group">
+        <label>付款方式</label>
+        <div class="payment-options">
+          <div class="payment-btn active" onclick="setPay(this, '💵現金')">💵 現金</div>
+          <div class="payment-btn" onclick="setPay(this, '💳刷卡')">💳 刷卡</div>
+        </div>
+        <input type="hidden" id="payment" value="💵現金">
+      </div>
+      
+      <button type="submit" id="submitBtn">記下來</button>
     </form>
     <p id="result"></p>
   </div>
 
   <script>
-    // ★★★ 換成你的 Google Script URL ★★★
+    // ★★★ 請確認這裡是你最新的 Google Script 網址 ★★★
     const scriptURL = "https://script.google.com/macros/s/AKfycbx9NO8E4i9nMm18iwKwzzDd2vw-AZH79TeO-mmxmjGQQVE6qJn03Xc2DcN_14CzHtYN/exec";
 
+    // 初始化
     document.getElementById('date').valueAsDate = new Date();
+    let realAssetValue = "$0"; 
     fetchStats(); 
 
-    function setType(val) {
+    // 切換 收入/支出 (視覺優化版)
+    function setType(el, val) {
       document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      el.classList.add('active');
       document.getElementById('type').value = val;
     }
 
+    // 切換 付款方式
     function setPay(el, val) {
       document.querySelectorAll('.payment-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
       document.getElementById('payment').value = val;
     }
 
+    // 送出表單
     document.getElementById("expenseForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = document.getElementById("submitBtn");
-      btn.innerText = "記錄中...";
+      const originalText = btn.innerText;
+      
+      btn.innerText = "⏳ 寫入中...";
       btn.disabled = true;
 
       const data = {
@@ -162,56 +334,59 @@
 
       try {
         await fetch(scriptURL, { method: "POST", body: JSON.stringify(data) });
-        document.getElementById("result").innerText = "✅ 記好了！";
-        setTimeout(() => document.getElementById("result").innerText = "", 2000);
         
+        document.getElementById("result").innerText = "✨ 記錄成功！";
+        document.getElementById("result").style.color = "#2e7d32";
+        
+        // 延遲清除訊息
+        setTimeout(() => document.getElementById("result").innerText = "", 3000);
+        
+        // 重置表單但保留日期
         document.getElementById("item").value = "";
         document.getElementById("amount").value = "";
+        
+        // 重設預設值：回到「支出」
+        document.getElementById('type').value = "支出";
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.type-btn')[0].classList.add('active');
+
+        // 更新數據
         fetchStats();
 
       } catch (err) {
-        document.getElementById("result").innerText = "❌ 失敗";
+        document.getElementById("result").innerText = "❌ 記錄失敗，請檢查網路";
+        document.getElementById("result").style.color = "red";
       } finally {
-        btn.innerText = "記錄";
+        btn.innerText = originalText;
         btn.disabled = false;
       }
     });
-    
-// 定義一個全域變數，用來偷存真正的金額
-    let realAssetValue = "$0"; 
 
-    // 讀取統計 (修改版)
+    // 讀取統計 + 隱私模式
     async function fetchStats() {
       try {
         let res = await fetch(scriptURL);
         let data = await res.json();
         
-        // 更新前三個格子的數據
         document.getElementById('inc').innerText = "$" + data.monthIncome;
         document.getElementById('exp').innerText = "$" + data.monthExpense;
         document.getElementById('net').innerText = "$" + data.monthNet;
         
-        // ★★★ 修改這裡：資產的部分 ★★★
-        // 1. 把真正的錢存到變數裡
         realAssetValue = "$" + data.totalAssets;
         
-        // 2. 畫面預設顯示星號 (保護隱私)
+        // 預設恢復為星號
         document.getElementById('asset').innerText = "*****";
         
       } catch (e) {
-        console.error(e);
+        console.error("統計讀取失敗", e);
       }
     }
 
-    // ★★★ 新增這個函式：切換顯示/隱藏 ★★★
     function toggleAsset() {
       const assetEl = document.getElementById('asset');
-      
       if (assetEl.innerText === "*****") {
-        // 如果現在是星號，就顯示真正的錢
         assetEl.innerText = realAssetValue;
       } else {
-        // 如果現在是錢，就變回星號
         assetEl.innerText = "*****";
       }
     }
