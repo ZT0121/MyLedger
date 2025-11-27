@@ -10,28 +10,28 @@
   <meta name="theme-color" content="#F9F8F6">
   <meta name="mobile-web-app-capable" content="yes">
   
-  <!-- 引入好看的字體 -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bg-color: #F9F8F6;
       --card-bg: #FFFFFF;
-      --primary: #C5A073; /* 質感金棕色 */
+      --primary: #C5A073;
       --primary-dark: #A68358;
       --text-main: #333333;
       --text-sub: #999999;
       --income: #34C759;
       --expense: #FF3B30;
       --asset: #007AFF;
-      --radius: 20px;
+      --radius: 16px;
     }
 
     body {
       font-family: "Noto Sans TC", sans-serif;
       background: var(--bg-color);
       margin: 0; 
-      padding: 20px;
+      /* ↓↓↓ 減少頁面邊距 20px -> 10px，爭取空間 */
+      padding: 10px; 
       display: flex; 
       flex-direction: column; 
       align-items: center;
@@ -39,59 +39,53 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* === 1. 頂部儀表板 (2x2 Grid) === */
+    /* === 1. 頂部儀表板 (維持 2x2 但變矮) === */
     .dashboard {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      gap: 8px; /* 減少間距 */
       width: 100%; 
       max-width: 420px;
-      margin-bottom: 25px;
+      margin-bottom: 10px; /* 減少與下方距離 */
     }
     
     .card {
       background: var(--card-bg);
-      padding: 20px 15px;
+      /* ↓↓↓ 大幅減少卡片內距，壓扁高度 */
+      padding: 12px 8px; 
       border-radius: var(--radius);
       text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.03); /* 柔和陰影 */
-      display: flex; 
-      flex-direction: column; 
-      justify-content: center;
-      transition: transform 0.1s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
       position: relative;
-      overflow: hidden;
     }
     
     .card:active { transform: scale(0.98); }
 
     .card h3 { 
-      margin: 0 0 8px 0; 
-      font-size: 13px; 
+      margin: 0 0 2px 0; /* 標題貼近數字 */
+      font-size: 12px; 
       color: var(--text-sub); 
       font-weight: 500;
-      letter-spacing: 0.5px;
     }
     
     .card p { 
       margin: 0; 
-      font-family: 'Roboto Mono', monospace; /* 數字用等寬字體比較整齊 */
-      font-size: 20px; 
+      font-family: 'Roboto Mono', monospace;
+      font-size: 18px; /* 數字保持清晰 */
       font-weight: 600; 
       color: var(--text-main); 
+      line-height: 1.2;
     }
     
-    /* 顏色標示 */
     .income p { color: var(--income); }
     .expense p { color: var(--expense); }
     .asset p { color: var(--asset); }
     
-    /* 隱私模式的游標 */
     .card.asset { cursor: pointer; }
     .card.asset::after {
       content: "👁️";
       position: absolute;
-      top: 8px; right: 8px;
+      top: 4px; right: 4px;
       font-size: 10px;
       opacity: 0.3;
     }
@@ -99,41 +93,50 @@
     /* === 2. 記帳表單容器 === */
     .container {
       background: var(--card-bg);
-      padding: 30px 25px;
-      border-radius: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+      /* ↓↓↓ 減少容器內距 30px -> 15px */
+      padding: 15px 20px;
+      border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.04);
       width: 100%; 
       max-width: 420px;
       box-sizing: border-box;
+      /* 讓容器自動填滿剩餘高度，不浪費空間 */
+      flex-grow: 1; 
+      display: flex;
+      flex-direction: column;
     }
 
     h2 { 
       text-align: center; 
-      margin: 0 0 25px 0; 
+      margin: 0 0 10px 0; /* 標題下方距離縮小 */
       color: var(--primary-dark); 
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 700;
-      letter-spacing: 1px;
     }
     
-    /* === 輸入框樣式優化 === */
-    .input-group { margin-bottom: 18px; }
+    /* === 輸入框樣式優化 (維持上下排列，但變緊湊) === */
+    .input-group { 
+      /* ↓↓↓ 欄位間距大幅減少 18px -> 8px */
+      margin-bottom: 8px; 
+    }
     
     label { 
       display: block; 
-      margin-bottom: 8px; 
+      /* ↓↓↓ 標籤與輸入框距離減少 8px -> 2px */
+      margin-bottom: 2px; 
       color: var(--text-sub); 
-      font-size: 13px;
+      font-size: 12px; /* 字體微縮 */
       font-weight: 500;
     }
     
     input {
       width: 100%;
-      padding: 14px;
+      /* ↓↓↓ 輸入框高度變矮 14px -> 8px */
+      padding: 8px 12px; 
       border: 2px solid transparent;
-      background: #F4F4F4; /* 淺灰背景 */
-      border-radius: 14px;
-      font-size: 16px;
+      background: #F4F4F4;
+      border-radius: 12px;
+      font-size: 16px; /* 保持 16px 防止 iOS 自動放大 */
       box-sizing: border-box;
       transition: all 0.2s;
       color: #333;
@@ -147,51 +150,50 @@
       box-shadow: 0 0 0 3px rgba(197, 160, 115, 0.15);
     }
 
-    /* === 切換按鈕 (藥丸造型) === */
+    /* === 切換按鈕 === */
     .toggle-container {
       background: #F0F0F0;
-      border-radius: 14px;
-      padding: 4px;
+      border-radius: 12px;
+      padding: 3px;
       display: flex;
-      margin-bottom: 25px;
+      margin-bottom: 12px; /* 減少距離 */
+      flex-shrink: 0;
     }
     
     .type-btn {
       flex: 1;
-      padding: 10px;
+      padding: 6px; /* 按鈕變矮 */
       text-align: center;
       cursor: pointer;
-      border-radius: 12px;
-      font-size: 15px;
+      border-radius: 10px;
+      font-size: 14px;
       font-weight: 500;
       color: #888;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s;
     }
     
-    /* 選中狀態 - 白色浮起 */
     .type-btn.active {
       background: #fff;
       color: var(--text-main);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       font-weight: bold;
     }
     
-    /* 收入選中時變綠，支出變紅 (選擇性) */
     .type-btn.active[onclick*="收入"] { color: var(--income); }
     .type-btn.active[onclick*="支出"] { color: var(--expense); }
 
     /* === 付款方式按鈕 === */
-    .payment-options { display: flex; gap: 12px; }
+    .payment-options { display: flex; gap: 8px; }
     
     .payment-btn {
       flex: 1;
-      padding: 12px;
+      padding: 8px; /* 按鈕變矮 */
       border: 1px solid #EEE;
-      border-radius: 14px;
+      border-radius: 12px;
       background: #fff;
       cursor: pointer;
       text-align: center;
-      font-size: 15px;
+      font-size: 14px;
       color: var(--text-main);
       transition: 0.2s;
     }
@@ -206,17 +208,18 @@
     /* === 送出按鈕 === */
     button[type="submit"] {
       width: 100%;
-      padding: 16px;
-      margin-top: 25px;
+      padding: 12px; /* 按鈕變矮 */
+      /* 利用 margin-top: auto 確保按鈕推到最下方 */
+      margin-top: auto; 
+      margin-bottom: 5px;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
       border: none;
-      border-radius: 16px;
-      font-size: 17px;
+      border-radius: 14px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(197, 160, 115, 0.3);
-      transition: transform 0.1s;
+      box-shadow: 0 6px 15px rgba(197, 160, 115, 0.25);
     }
     
     button[type="submit"]:active { transform: scale(0.97); }
@@ -224,15 +227,14 @@
 
     #result { 
       text-align: center; 
-      margin-top: 15px; 
-      font-size: 14px; 
-      height: 20px; /* 佔位避免跳動 */
+      margin-top: 5px; 
+      font-size: 12px; 
+      height: 18px; 
     }
   </style>
 </head>
 <body>
 
-  <!-- 儀表板 -->
   <div class="dashboard">
     <div class="card income">
       <h3>本月收入</h3>
@@ -252,12 +254,10 @@
     </div>
   </div>
 
-  <!-- 記帳表單 -->
   <div class="container">
     <h2>💸 快速記帳</h2>
-    <form id="expenseForm">
+    <form id="expenseForm" style="flex-grow: 1; display: flex; flex-direction: column;">
       
-      <!-- 收入/支出 切換 (藥丸樣式) -->
       <div class="toggle-container">
         <div class="type-btn active" onclick="setType(this, '支出')">支出</div>
         <div class="type-btn" onclick="setType(this, '收入')">收入</div>
@@ -271,7 +271,7 @@
       
       <div class="input-group">
         <label>品項</label>
-        <input type="text" id="item" placeholder=" ">
+        <input type="text" id="item" placeholder=" " >
       </div>
 
       <div class="input-group">
@@ -302,7 +302,7 @@
     let realAssetValue = "$0"; 
     fetchStats(); 
 
-    // 切換 收入/支出 (視覺優化版)
+    // 切換 收入/支出
     function setType(el, val) {
       document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
@@ -339,19 +339,15 @@
         document.getElementById("result").innerText = "✨ 記錄成功！";
         document.getElementById("result").style.color = "#2e7d32";
         
-        // 延遲清除訊息
         setTimeout(() => document.getElementById("result").innerText = "", 3000);
         
-        // 重置表單但保留日期
         document.getElementById("item").value = "";
         document.getElementById("amount").value = "";
         
-        // 重設預設值：回到「支出」
         document.getElementById('type').value = "支出";
         document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.type-btn')[0].classList.add('active');
 
-        // 更新數據
         fetchStats();
 
       } catch (err) {
@@ -363,7 +359,7 @@
       }
     });
 
-    // 讀取統計 + 隱私模式
+    // 讀取統計
     async function fetchStats() {
       try {
         let res = await fetch(scriptURL);
@@ -374,8 +370,6 @@
         document.getElementById('net').innerText = "$" + data.monthNet;
         
         realAssetValue = "$" + data.totalAssets;
-        
-        // 預設恢復為星號
         document.getElementById('asset').innerText = "*****";
         
       } catch (e) {
