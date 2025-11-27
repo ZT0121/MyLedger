@@ -86,8 +86,8 @@
       <p id="exp">$0</p>
     </div>
     <div class="card">
-      <h3>本月總計</h3>
-      <p id="tot">$0</p>
+      <h3>目前資產</h3> <!-- 標題改成這個比較合理 -->
+      <p id="tot" style="color:#0288d1;">$0</p> <!-- 我把資產改成藍色，比較中性 -->
     </div>
   </div>
 
@@ -178,14 +178,15 @@
       }
     });
 
-    // 讀取統計
+// 讀取統計
     async function fetchStats() {
       try {
         let res = await fetch(scriptURL);
         let data = await res.json();
-        document.getElementById('inc').innerText = "$" + data.income;
-        document.getElementById('exp').innerText = "$" + data.expense;
-        document.getElementById('tot').innerText = "$" + data.total;
+        
+        document.getElementById('inc').innerText = "$" + data.monthIncome;  // 改成 monthIncome
+        document.getElementById('exp').innerText = "$" + data.monthExpense; // 改成 monthExpense
+        document.getElementById('tot').innerText = "$" + data.totalAssets;  // 改成 totalAssets
       } catch (e) {
         console.error(e);
       }
