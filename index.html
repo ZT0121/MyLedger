@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📒小帳本</title>
+
+  <!-- ★★★ 第2步：新增的 PWA 設定 ★★★ -->
+  <!-- 連結 manifest 設定檔 -->
+  <link rel="manifest" href="./manifest.json">
+  <!-- 設定 Android 瀏覽器上方狀態列顏色 (配合你的背景米色) -->
+  <meta name="theme-color" content="#fdfaf6">
+  <!-- 告訴手機這是一個 Web App -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <!-- ★★★ 新增結束 ★★★ -->
+
   <style>
     body {
       font-family: "Noto Sans TC", sans-serif;
@@ -117,6 +127,9 @@
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbz6A_SnFG2OKDPfP0LFWXxc0sukuqVlQR3Is-7TM35aR-Flv_-UiDBzEC4m0SC1Mi2n/exec";
 
+    // 自動填入今天的日期 (為了方便記帳，這段你可以加上去)
+    document.getElementById('date').valueAsDate = new Date();
+
     // 付款方式按鈕切換
     const paymentBtns = document.querySelectorAll(".payment-btn");
     const paymentInput = document.getElementById("payment");
@@ -149,16 +162,22 @@
         return;
       }
 
+      document.getElementById("result").innerText = "⏳ 傳送中...";
+      document.getElementById("result").className = "";
+
       try {
         let res = await fetch(scriptURL, {
           method: "POST",
           body: JSON.stringify(data)
         });
-document.getElementById("result").innerText =
-  `✅ 已記錄：${data.item || "-"} $${data.amount} ${data.payment || ""}`;
-document.getElementById("result").className = "success";
+        document.getElementById("result").innerText =
+          `✅ 已記錄：${data.item || "-"} $${data.amount} ${data.payment || ""}`;
+        document.getElementById("result").className = "success";
 
         document.getElementById("expenseForm").reset();
+        // 重設後，日期會清空，再次補上今天日期方便連續記帳
+        document.getElementById('date').valueAsDate = new Date();
+        
         paymentBtns.forEach(b => b.classList.remove("active"));
         paymentInput.value = "";
       } catch (err) {
